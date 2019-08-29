@@ -83,18 +83,20 @@ fi
 """.format(build_part)
 
 
-post_merge_text = """
+hook_part = """
 echo "$(date +"%d.%m.%Y %T"): INCOMING CHANGES" |& tee -a  ./.git/poor-man-ci/debug.log
 {0}
 """.format(build_part)
 
+CURRENT_DIR = os.path.abspath(
+  os.path.dirname(__file__)
+)
+
 crontab_part = """
-# POOR MAN CI
-* * * * * cd {0} 
+# POOR MAN CI {0}
+* * * * * cd {0} && git pull
 """.format(
-  os.path.abspath(
-    os.path.dirname(__file__)
-  )
+  CURRENT_DIR
 )
 
 
@@ -113,7 +115,7 @@ try:
   print("Created build file")
 
   with open(HOOK_FILE, "w") as file:
-    file.write(build_part)
+    file.write(hook_part)
 
   print("Created hook file")
 
@@ -128,10 +130,17 @@ try:
 
   tabs = subprocess.call(["crontab", "-l"])
 
-  # if "POOR MAN CI" in tabs:
-  #   print("Warning: crontab already filled in.")
-  # else:
-    
+  if "# POOR MAN CI {0}".format(CURRENT_DIR) in tabs:
+    print("Warning: crontab for this project already there")
+  else:
+    subprocess.run(
+      """( crontab -l | cat; echo "{0}" ) | crontab -""".format(
+        crontab_part
+      ),
+      shell=True
+    )
+
+    print("Added crontab!")
   
   
   print("Successfully initialized poor man ci!")
