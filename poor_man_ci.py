@@ -128,7 +128,15 @@ try:
 
   print("Creating crontab")
 
-  tabs = subprocess.check_output("crontab -l", shell=True).decode()
+  tabs = ""
+
+  try:
+    tabs = subprocess.check_output("crontab -l", shell=True).decode()
+  except subprocess.CalledProcessError:
+    print(
+      "Info: crontab -l returned non zero exit code but this is ok. It means there is no crontab data for current user"
+    )
+    pass
 
   if "# POOR MAN CI {0}".format(CURRENT_DIR) in tabs:
     print("Warning: crontab for this project already there")
