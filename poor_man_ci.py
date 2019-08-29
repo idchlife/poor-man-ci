@@ -68,8 +68,8 @@ command_content = """
 
 build_part = """
 echo "$(date +"%d.%m.%Y %T"): BUILDING" |& tee -a  ./.git/poor-man-ci/debug.log
-./.git/poor-man-ci/build.sh |& tee -a ./git/poor-man-ci/debug.log
-echo "$(date +"%d.%m.%Y %T"): BUILD DONE" |& tee -a  ./.git/poor-man-ci/debug.log"
+./.git/poor-man-ci/build.sh |& tee -a ./.git/poor-man-ci/debug.log
+echo "$(date +"%d.%m.%Y %T"): BUILD DONE" |& tee -a  ./.git/poor-man-ci/debug.log
 """
 
 if build_keyword:
@@ -126,6 +126,12 @@ try:
 
   print("Creating crontab")
 
+  tabs = subprocess.call(["crontab", "-l"])
+
+  # if "POOR MAN CI" in tabs:
+  #   print("Warning: crontab already filled in.")
+  # else:
+    
   
   
   print("Successfully initialized poor man ci!")
