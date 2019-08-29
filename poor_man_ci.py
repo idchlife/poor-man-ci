@@ -128,7 +128,7 @@ try:
 
   print("Creating crontab")
 
-  tabs = subprocess.check_output("crontab -l", shell=True)
+  tabs = subprocess.check_output("crontab -l", shell=True).decode()
 
   if "# POOR MAN CI {0}".format(CURRENT_DIR) in tabs:
     print("Warning: crontab for this project already there")
